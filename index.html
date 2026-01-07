@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>专业风水罗盘-完美居中版</title>
+    <title>专业风水罗盘-明仔专用版</title>
     <style>
         :root { 
             --gold: #d4af37; --wood-bg: #1a0505; --red: #ff3b30; 
@@ -77,6 +77,19 @@
             padding: 20px 50px; font-size: 1.5rem; background: var(--gold); 
             color: #000; border-radius: 50px; font-weight: bold; border: none; cursor: pointer;
         }
+
+        /* 右下角署名小字 */
+        .author-tag {
+            position: fixed;
+            right: 15px;
+            bottom: 20px;
+            color: var(--gold);
+            font-size: 12px;
+            opacity: 0.6;
+            font-family: sans-serif;
+            letter-spacing: 1px;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -105,6 +118,8 @@
             </div>
         </div>
     </div>
+
+    <div class="author-tag">dy：小茗同学</div>
 
     <script>
         const ms = ["子","癸","丑","艮","寅","甲","卯","乙","辰","巽","巳","丙","午","丁","未","坤","申","庚","酉","辛","戌","乾","亥","壬"];
