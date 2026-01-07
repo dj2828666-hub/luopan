@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>九宫八卦专业罗盘</title>
+    <style>
+        :root { --gold: #d4af37; --red: #ff3b30; }
+        body { background: #000; color: var(--gold); font-family: "PingFang SC", "Microsoft YaHei", sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        
+        /* 状态栏 */
+        #status-bar { position: absolute; top: 50px; text-align: center; }
+        #degree { font-size: 3rem; font-weight: bold; color: white; }
+        #cur-gua { font-size: 1.5rem; margin-top: 10px; }
+
+        /* 罗盘外框 */
+        #compass-wrapper { position: relative; width: 360px; height: 360px; display: flex; align-items: center; justify-content: center; }
+        
+        /* 十字天心线（固定不动） */
+        .cross { position: absolute; background: var(--red); opacity: 0.6; z-index: 10; pointer-events: none; }
+        .h-line { width: 100%; height: 1px; }
+        .v-line { width: 1px; height: 100%; }
+
+        /* 旋转的盘面 */
+        #disk { 
+            position: relative; width: 340px; height: 340px; 
+            border: 4px solid var(--gold); border-radius: 50%; 
+            background: #1a1a1a; transition: transform 0.1s linear;
+        }
+
+        /* 九宫格布局 */
+        .nine-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
+            width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
+        }
+        .cell {
+            border: 0.5px solid rgba(212, 175, 55, 0.3);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: bold;
+        }
+        .center-cell { background: rgba(212, 175, 55, 0.1); color: var(--red); }
+        .num { font-size: 18px; margin-bottom: 2px; }
+
+        #auth-btn { 
+            padding: 15px 40px; font-size: 20px; background: var(--gold); 
+            color: black; border: none; border-radius: 50px; cursor: pointer; z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="auth-btn">开启专业罗盘</button>
+
+    <div id="status-bar" style="display:none;">
+        <div id="degree">0°</div>
+        <div id="cur-gua">正在校准自转轴...</div>
+    </div>
+
+    <div id="compass-wrapper" style="display:none;">
+        <div class="cross h-line"></div>
+        <div class="cross v-line"></div>
+        
+        <div id="disk">
+            <div class="nine-grid">
+                <div class="cell"><span class="num">4</span>巽(东南)</div>
+                <div class="cell"><span class="num">9</span>离(正南)</div>
+                <div class="cell"><span class="num">2</span>坤(西南)</div>
+                <div class="cell"><span class="num">3</span>震(正东)</div>
+                <div class="cell center-cell">中宫</div>
+                <div class="cell"><span class="num">7</span>兑(正西)</div>
+                <div class="cell"><span class="num">8</span>艮(东北)</div>
+                <div class="cell"><span class="num">1</span>坎(正北)</div>
+                <div class="cell"><span class="num">6</span>乾(西北)</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const authBtn = document.getElementById('auth-btn');
+        const wrapper = document.getElementById('compass-wrapper');
+        const statusBar = document.getElementById('status-bar');
+        const disk = document.getElementById('disk');
+        const degreeText = document.getElementById('degree');
+        const guaText = document.getElementById('cur-gua');
+
+        // 八卦方位逻辑判定
+        const guaList = [
+            { name: "坎一 (正北)", range: [337.5, 22.5] },
+            { name: "艮八 (东北)", range: [22.5, 67.5] },
+            { name: "震三 (正东)", range: [67.5, 112.5] },
+            { name: "巽四 (东南)", range: [112.5, 157.5] },
+            { name: "离九 (正南)", range: [157.5, 202.5] },
+            { name: "坤二 (西南)", range: [202.5, 247.5] },
+            { name: "兑七 (正西)", range: [247.5, 292.5] },
+            { name: "乾六 (西北)", range: [292.5, 337.5] }
+        ];
+
+        authBtn.addEventListener('click', function() {
+            if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission().then(state => {
+                    if (state === 'granted') startCompass();
+                });
+            } else {
+                startCompass();
+            }
+        });
+
+        function startCompass() {
+            authBtn.style.display = 'none';
+            wrapper.style.display = 'flex';
+            statusBar.style.display = 'block';
+
+            window.addEventListener('deviceorientation', function(event) {
+                let heading = event.webkitCompassHeading || 0;
+                
+                // 旋转盘面（指向磁北）
+                disk.style.transform = `rotate(${-heading}deg)`;
+                
+                // 更新显示文字
+                degreeText.innerText = Math.round(heading) + "°";
+                
+                // 判定当前所属卦位
+                let currentGua = guaList.find(g => {
+                    if (g.name.includes("坎一")) {
+                        return heading > g.range[0] || heading <= g.range[1];
+                    }
+                    return heading > g.range[0] && heading <= g.range[1];
+                });
+                
+                if (currentGua) guaText.innerText = currentGua.name;
+            }, true);
+        }
+    </script>
+</body>
+</html>
