@@ -3,74 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>极准专业风水罗盘-明仔专用版</title>
+    <title>专业风水罗盘-明仔专用版</title>
     <style>
-        :root { 
-            --gold: #d4af37; --wood-bg: #1a0505; --red: #ff3b30; 
+        :root { 
+            --gold: #d4af37; --wood-bg: #1a0505; --red: #ff3b30; 
             --water-blue: #007aff; --wood-green: #34c759; --earth-yellow: #ff9500; --metal-white: #ffffff;
         }
-        
-        html, body { height: 100%; width: 100%; margin: 0; padding: 0; background: #000; overflow: hidden; }
-        body { display: flex; flex-direction: column; align-items: center; font-family: "PingFang SC", sans-serif; }
-
-        /* 布局上移：从15vh调至8vh */
-        #info-box { 
-            margin-top: 8vh; 
-            text-align: center; width: 100%; z-index: 100;
+        
+        /* 布局核心：确保身体占满全屏并居中 */
+        html, body { 
+            height: 100%; width: 100%; margin: 0; padding: 0; 
+            background: #000; overflow: hidden; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        #degree-val { 
-            font-size: 4.2rem; 
-            font-weight: 900; color: #fff; margin: 0; 
+
+        /* 顶部文字信息：加大并与罗盘拉开间距 */
+        #info-box { 
+            text-align: center; width: 100%; z-index: 100;
+            margin-bottom: 40px; /* 拉开与罗盘的距离 */
+        }
+        #degree-val { 
+            font-size: 4.5rem; font-weight: 900; color: #fff; margin: 0; 
             text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
         }
-        #gua-val { 
-            font-size: 1.3rem; font-weight: 600; color: var(--gold);
-            background: rgba(211, 175, 55, 0.2); padding: 6px 20px; 
-            border-radius: 30px; display: inline-block; margin-top: 5px;
+        #gua-val { 
+            font-size: 1.4rem; font-weight: bold; color: var(--gold);
+            background: rgba(211, 175, 55, 0.15); padding: 8px 25px; 
+            border-radius: 30px; display: inline-block; margin-top: 10px;
         }
 
-        /* 罗盘容器上移 */
+        /* 罗盘容器：通过Flex自动居中 */
         .compass-container {
-            margin-top: 3vh; 
             position: relative;
-            width: 86vw; height: 86vw; max-width: 400px; max-height: 400px;
+            width: 88vw; height: 88vw; max-width: 420px; max-height: 420px;
             display: flex; align-items: center; justify-content: center;
         }
 
+        /* 十字线 */
         .line { position: absolute; background: var(--red); z-index: 50; opacity: 0.9; pointer-events: none; }
-        .h-line { width: 110%; height: 1px; }
-        .v-line { width: 1px; height: 110%; }
+        .h-line { width: 115%; height: 1.2px; }
+        .v-line { width: 1.2px; height: 115%; }
 
+        /* 旋转盘面 */
         #disk {
             width: 100%; height: 100%; border-radius: 50%;
             background: radial-gradient(circle, #3d1010 0%, #0a0000 100%);
-            border: 6px solid var(--gold); box-shadow: 0 0 40px rgba(0,0,0,1);
+            border: 8px solid var(--gold); box-shadow: 0 0 50px rgba(0,0,0,1);
             position: relative; transition: transform 0.05s linear; overflow: hidden;
         }
 
+        /* 九宫格文字颜色 */
         .nine-grid {
             position: absolute; top: 22%; left: 22%; width: 56%; height: 56%;
             display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
             border: 1px solid var(--gold); z-index: 10; background: rgba(0,0,0,0.3);
         }
-        .cell { border: 0.5px solid rgba(212,175,55,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #ccc; }
-        .cell b { font-size: 13px; margin-bottom: 2px; }
-        
-        .fire { color: var(--red) !important; }
-        .water { color: var(--water-blue) !important; }
-        .wood { color: var(--wood-green) !important; }
-        .metal { color: var(--metal-white) !important; }
-        .earth { color: var(--earth-yellow) !important; }
+        .cell { border: 0.5px solid rgba(212,175,55,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; }
+        .cell b { font-size: 14px; margin-bottom: 2px; }
+        
+        .fire { color: var(--red); }
+        .water { color: var(--water-blue); }
+        .wood { color: var(--wood-green); }
+        .metal { color: var(--metal-white); }
+        .earth { color: var(--earth-yellow); }
 
         .m-layer { position: absolute; width: 100%; height: 100%; z-index: 5; }
         .m-text {
             position: absolute; width: 100%; height: 100%; text-align: center;
-            font-size: 12px; font-weight: bold; padding-top: 10px; box-sizing: border-box; color: var(--gold);
+            font-size: 13px; font-weight: bold; padding-top: 12px; box-sizing: border-box; color: var(--gold);
         }
 
-        #start-btn { 
-            margin-top: 40vh; padding: 18px 45px; font-size: 1.4rem; 
-            background: var(--gold); color: #000; border-radius: 50px; font-weight: bold; border: none;
+        #start-btn { 
+            padding: 20px 50px; font-size: 1.5rem; background: var(--gold); 
+            color: #000; border-radius: 50px; font-weight: bold; border: none; cursor: pointer;
         }
     </style>
 </head>
@@ -80,7 +85,7 @@
 
     <div id="info-box" style="display:none;">
         <p id="degree-val">0°</p>
-        <span id="gua-val">校准磁场...</span>
+        <span id="gua-val">校准中...</span>
     </div>
 
     <div class="compass-container" id="ui" style="display:none;">
@@ -88,15 +93,15 @@
         <div id="disk">
             <div id="mountains-box" class="m-layer"></div>
             <div class="nine-grid">
-                <div class="cell"><b class="wood">巽四</b>木</div>
-                <div class="cell"><b class="fire">离九</b>火</div>
-                <div class="cell"><b class="earth">坤二</b>土</div>
-                <div class="cell"><b class="wood">震三</b>木</div>
-                <div class="cell"><b class="earth">中宫</b>土</div>
-                <div class="cell"><b class="metal">兑七</b>金</div>
-                <div class="cell"><b class="earth">艮八</b>土</div>
-                <div class="cell"><b class="water">坎一</b>水</div>
-                <div class="cell"><b class="metal">乾六</b>金</div>
+                <div class="cell"><b class="wood">巽四</b><small class="wood">木</small></div>
+                <div class="cell"><b class="fire">离九</b><small class="fire">火</small></div>
+                <div class="cell"><b class="earth">坤二</b><small class="earth">土</small></div>
+                <div class="cell"><b class="wood">震三</b><small class="wood">木</small></div>
+                <div class="cell"><b class="earth">中宫</b><small class="earth">土</small></div>
+                <div class="cell"><b class="metal">兑七</b><small class="metal">金</small></div>
+                <div class="cell"><b class="earth">艮八</b><small class="earth">土</small></div>
+                <div class="cell"><b class="water">坎一</b><small class="water">水</small></div>
+                <div class="cell"><b class="metal">乾六</b><small class="metal">金</small></div>
             </div>
         </div>
     </div>
@@ -128,13 +133,12 @@
             document.getElementById('info-box').style.display = 'block';
 
             window.addEventListener('deviceorientation', e => {
-                let h = e.webkitCompassHeading; 
-                
+                let h = e.webkitCompassHeading; 
                 if (h !== undefined) {
                     disk.style.transform = `rotate(${-h}deg)`;
                     degEl.innerText = Math.round(h) + "°";
 
-                    // 修复版判定算法
+                    // 离九位精准判定修复
                     const gs = [
                         {n:"坎一属水(正北)", min:337.5, max:22.5},
                         {n:"艮八属土(东北)", min:22.5, max:67.5},
@@ -145,16 +149,16 @@
                         {n:"兑七属金(正西)", min:247.5, max:292.5},
                         {n:"乾六属金(西北)", min:292.5, max:337.5}
                     ];
-                    
-                    let curGua = "校准中...";
+                    
+                    let res = "校准中...";
                     for (let g of gs) {
-                        if (g.min > g.max) { // 处理北位的跨360度情况
-                            if (h >= g.min || h < g.max) { curGua = g.n; break; }
+                        if (g.min > g.max) { // 处理跨0度
+                            if (h >= g.min || h < g.max) { res = g.n; break; }
                         } else {
-                            if (h >= g.min && h < g.max) { curGua = g.n; break; }
+                            if (h >= g.min && h < g.max) { res = g.n; break; }
                         }
                     }
-                    guaEl.innerText = curGua;
+                    guaEl.innerText = res;
                 }
             }, true);
         }
