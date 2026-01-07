@@ -3,79 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>极准专业风水罗盘</title>
+    <title>极准专业风水罗盘-明仔专用版</title>
     <style>
-        :root { 
-            --gold: #d4af37; --wood-bg: #1a0505; --red: #ff3b30; 
+        :root { 
+            --gold: #d4af37; --wood-bg: #1a0505; --red: #ff3b30; 
             --water-blue: #007aff; --wood-green: #34c759; --earth-yellow: #ff9500; --metal-white: #ffffff;
         }
-        
+        
         html, body { height: 100%; width: 100%; margin: 0; padding: 0; background: #000; overflow: hidden; }
         body { display: flex; flex-direction: column; align-items: center; font-family: "PingFang SC", sans-serif; }
 
-        /* 顶部角度信息：加大字号，并与罗盘拉开距离 */
-        #info-box { 
-            margin-top: 15vh; /* 距离顶部15%，确保与罗盘分开 */
+        /* 布局上移：从15vh调至8vh */
+        #info-box { 
+            margin-top: 8vh; 
             text-align: center; width: 100%; z-index: 100;
         }
-        #degree-val { 
-            font-size: 4.5rem; /* 字号加大 */
-            font-weight: 900; color: #fff; margin: 0; 
+        #degree-val { 
+            font-size: 4.2rem; 
+            font-weight: 900; color: #fff; margin: 0; 
             text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
-            letter-spacing: -2px;
         }
-        #gua-val { 
-            font-size: 1.4rem; font-weight: 500; color: var(--gold);
-            background: rgba(211, 175, 55, 0.15); padding: 8px 20px; 
-            border-radius: 30px; display: inline-block; margin-top: 10px;
+        #gua-val { 
+            font-size: 1.3rem; font-weight: 600; color: var(--gold);
+            background: rgba(211, 175, 55, 0.2); padding: 6px 20px; 
+            border-radius: 30px; display: inline-block; margin-top: 5px;
         }
 
-        /* 罗盘容器：垂直居中控制 */
+        /* 罗盘容器上移 */
         .compass-container {
-            margin-top: 5vh; /* 与上方文字保持5%的间距 */
+            margin-top: 3vh; 
             position: relative;
-            width: 88vw; height: 88vw; max-width: 420px; max-height: 420px;
+            width: 86vw; height: 86vw; max-width: 400px; max-height: 400px;
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* 十字天心线：专业测绘标准 */
         .line { position: absolute; background: var(--red); z-index: 50; opacity: 0.9; pointer-events: none; }
-        .h-line { width: 115%; height: 1.2px; }
-        .v-line { width: 1.2px; height: 115%; }
+        .h-line { width: 110%; height: 1px; }
+        .v-line { width: 1px; height: 110%; }
 
-        /* 旋转盘面 */
         #disk {
             width: 100%; height: 100%; border-radius: 50%;
             background: radial-gradient(circle, #3d1010 0%, #0a0000 100%);
-            border: 8px solid var(--gold); box-shadow: 0 0 50px rgba(0,0,0,1);
+            border: 6px solid var(--gold); box-shadow: 0 0 40px rgba(0,0,0,1);
             position: relative; transition: transform 0.05s linear; overflow: hidden;
         }
 
-        /* 九宫格：加入五行属性 */
         .nine-grid {
             position: absolute; top: 22%; left: 22%; width: 56%; height: 56%;
             display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr);
-            border: 1px solid var(--gold); z-index: 10;
+            border: 1px solid var(--gold); z-index: 10; background: rgba(0,0,0,0.3);
         }
         .cell { border: 0.5px solid rgba(212,175,55,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: #ccc; }
-        .cell b { font-size: 14px; color: #fff; margin-bottom: 2px; }
-        
-        /* 五行颜色标注 */
+        .cell b { font-size: 13px; margin-bottom: 2px; }
+        
         .fire { color: var(--red) !important; }
         .water { color: var(--water-blue) !important; }
         .wood { color: var(--wood-green) !important; }
         .metal { color: var(--metal-white) !important; }
         .earth { color: var(--earth-yellow) !important; }
 
-        /* 二十四山文字 */
         .m-layer { position: absolute; width: 100%; height: 100%; z-index: 5; }
         .m-text {
             position: absolute; width: 100%; height: 100%; text-align: center;
-            font-size: 13px; font-weight: bold; padding-top: 12px; box-sizing: border-box; color: var(--gold);
+            font-size: 12px; font-weight: bold; padding-top: 10px; box-sizing: border-box; color: var(--gold);
         }
 
-        #start-btn { 
-            position: absolute; top: 50%; padding: 20px 50px; font-size: 1.5rem; 
+        #start-btn { 
+            margin-top: 40vh; padding: 18px 45px; font-size: 1.4rem; 
             background: var(--gold); color: #000; border-radius: 50px; font-weight: bold; border: none;
         }
     </style>
@@ -133,31 +127,34 @@
             document.getElementById('ui').style.display = 'flex';
             document.getElementById('info-box').style.display = 'block';
 
-            // 增加高频监听
             window.addEventListener('deviceorientation', e => {
-                // 使用 webkitCompassHeading 获取硬件级磁北方向
-                let h = e.webkitCompassHeading; 
-                
+                let h = e.webkitCompassHeading; 
+                
                 if (h !== undefined) {
-                    // 精度显示优化：保留一位小数以示专业，UI显示取整
                     disk.style.transform = `rotate(${-h}deg)`;
                     degEl.innerText = Math.round(h) + "°";
 
-                    // 实时判定具体方位
+                    // 修复版判定算法
                     const gs = [
-                        {n:"坎一属水(正北)", r:[337.5, 22.5]},
-                        {n:"艮八属土(东北)", r:[22.5, 67.5]},
-                        {n:"震三属木(正东)", r:[67.5, 112.5]},
-                        {n:"巽四属木(东南)", r:[112.5, 157.5]},
-                        {n:"离九属火(正南)", r:[157.5, 202.5]},
-                        {n:"坤二属土(西南)", r:[202.5, 247.5]},
-                        {n:"兑七属金(正西)", r:[247.5, 292.5]},
-                        {n:"乾六属金(西北)", r:[292.5, 337.5]}
+                        {n:"坎一属水(正北)", min:337.5, max:22.5},
+                        {n:"艮八属土(东北)", min:22.5, max:67.5},
+                        {n:"震三属木(正东)", min:67.5, max:112.5},
+                        {n:"巽四属木(东南)", min:112.5, max:157.5},
+                        {n:"离九属火(正南)", min:157.5, max:202.5},
+                        {n:"坤二属土(西南)", min:202.5, max:247.5},
+                        {n:"兑七属金(正西)", min:247.5, max:292.5},
+                        {n:"乾六属金(西北)", min:292.5, max:337.5}
                     ];
-                    
-                    let cur = gs.find(x => h > x.r[0] || h <= x.r[1]);
-                    if (h > 22.5) cur = gs.find(x => h > x.r[0] && h <= x.r[1]);
-                    guaEl.innerText = cur ? cur.n : "校准中...";
+                    
+                    let curGua = "校准中...";
+                    for (let g of gs) {
+                        if (g.min > g.max) { // 处理北位的跨360度情况
+                            if (h >= g.min || h < g.max) { curGua = g.n; break; }
+                        } else {
+                            if (h >= g.min && h < g.max) { curGua = g.n; break; }
+                        }
+                    }
+                    guaEl.innerText = curGua;
                 }
             }, true);
         }
