@@ -1,128 +1,103 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>专业风水罗盘-全信息版</title>
+    <title>专业风水罗盘</title>
     <style>
-        :root { 
-            --gold: #d4af37; --wood-bg: #1a0505; --red: #ff3b30; 
-            --water-blue: #007aff; --wood-green: #34c759; --earth-yellow: #ff9500; --metal-white: #ffffff;
-        }
-        
-        html, body { height: 100%; width: 100%; margin: 0; padding: 0; background: #000; overflow: hidden; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
+        :root { --gold: #d4af37; --red: #ff3b30; }
+        html, body { height: 100%; width: 100%; margin: 0; background: #000; overflow: hidden; color: var(--gold); font-family: sans-serif; }
+        body { display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        #info-box { text-align: center; width: 100%; z-index: 100; margin-bottom: 30px; }
-        #degree-val { font-size: 4.5rem; font-weight: 900; color: #fff; margin: 0; text-shadow: 0 0 20px rgba(212, 175, 55, 0.6); }
-        #gua-val { font-size: 1.3rem; font-weight: bold; color: var(--gold); background: rgba(211, 175, 55, 0.15); padding: 8px 25px; border-radius: 30px; display: inline-block; margin-top: 5px; }
+        /* 顶部信息 */
+        #info-box { text-align: center; margin-bottom: 20px; display: none; }
+        #degree-val { font-size: 3.5rem; font-weight: bold; color: #fff; margin: 0; }
+        #gua-val { font-size: 1.2rem; background: rgba(211,175,55,0.2); padding: 5px 15px; border-radius: 20px; }
 
-        .compass-container { position: relative; width: 88vw; height: 88vw; max-width: 420px; max-height: 420px; display: flex; align-items: center; justify-content: center; }
+        /* 罗盘容器 */
+        .compass-container { position: relative; width: 85vw; height: 85vw; max-width: 380px; display: none; align-items: center; justify-content: center; }
+        
+        /* 旋转盘面 */
+        #disk { width: 100%; height: 100%; border-radius: 50%; border: 6px solid var(--gold); position: relative; transition: transform 0.05s linear; background: #1a0505; overflow: hidden; }
 
-        .line { position: absolute; background: var(--red); z-index: 50; opacity: 0.9; pointer-events: none; }
-        .h-line { width: 112%; height: 1.2px; }
-        .v-line { width: 1.2px; height: 112%; }
+        /* 十字线 */
+        .line { position: absolute; background: var(--red); z-index: 50; pointer-events: none; }
+        .h-line { width: 110%; height: 1px; }
+        .v-line { width: 1px; height: 110%; }
 
-        #disk { width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle, #3d1010 0%, #0a0000 100%); border: 8px solid var(--gold); box-shadow: 0 0 50px rgba(0,0,0,1); position: relative; transition: transform 0.05s linear; overflow: hidden; }
+        /* 九宫格 */
+        .nine-grid { position: absolute; top: 20%; left: 20%; width: 60%; height: 60%; display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--gold); z-index: 10; }
+        .cell { border: 0.5px solid rgba(212,175,55,0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; }
+        .cell b { font-size: 13px; color: #fff; }
 
-        .nine-grid { position: absolute; top: 22%; left: 22%; width: 56%; height: 56%; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); border: 1px solid var(--gold); z-index: 10; background: rgba(0,0,0,0.4); }
-        .cell { border: 0.5px solid rgba(212,175,55,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2px; }
-        .cell b { font-size: 13px; margin-bottom: 2px; color: #fff; }
-        .cell small { font-size: 9px; line-height: 1.1; text-align: center; }
-        
-        .fire { color: var(--red); }
-        .water { color: var(--water-blue); }
-        .wood { color: var(--wood-green); }
-        .metal { color: var(--metal-white); }
-        .earth { color: var(--earth-yellow); }
-
-        .m-layer { position: absolute; width: 100%; height: 100%; z-index: 5; }
-        .m-text { position: absolute; width: 100%; height: 100%; text-align: center; font-size: 13px; font-weight: bold; padding-top: 10px; box-sizing: border-box; color: var(--gold); }
-
-        #start-btn { padding: 20px 50px; font-size: 1.5rem; background: var(--gold); color: #000; border-radius: 50px; font-weight: bold; border: none; cursor: pointer; }
+        /* 开始按钮 - 确保显眼 */
+        #start-btn { padding: 20px 40px; font-size: 1.5rem; background: var(--gold); color: #000; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; z-index: 100; box-shadow: 0 0 20px rgba(212,175,55,0.5); }
     </style>
 </head>
 <body>
 
-    <button id="start-btn">开启极准罗盘</button>
+    <button id="start-btn">点击开启罗盘</button>
 
-    <div id="info-box" style="display:none;">
+    <div id="info-box">
         <p id="degree-val">0°</p>
         <span id="gua-val">校准中...</span>
     </div>
 
-    <div class="compass-container" id="ui" style="display:none;">
+    <div class="compass-container" id="ui">
         <div class="line h-line"></div><div class="line v-line"></div>
         <div id="disk">
-            <div id="mountains-box" class="m-layer"></div>
             <div class="nine-grid">
-                <div class="cell"><b class="wood">巽四</b><small class="wood">木(长女)</small></div>
-                <div class="cell"><b class="fire">离九</b><small class="fire">火(中女)</small></div>
-                <div class="cell"><b class="earth">坤二</b><small class="earth">土(母亲)</small></div>
-                <div class="cell"><b class="wood">震三</b><small class="wood">木(长男)</small></div>
-                <div class="cell"><b class="earth">中宫</b><small class="earth">土</small></div>
-                <div class="cell"><b class="metal">兑七</b><small class="metal">金(少女)</small></div>
-                <div class="cell"><b class="earth">艮八</b><small class="earth">土(少男)</small></div>
-                <div class="cell"><b class="water">坎一</b><small class="water">水(中男)</small></div>
-                <div class="cell"><b class="metal">乾六</b><small class="metal">金(父亲)</small></div>
+                <div class="cell"><b>巽四</b><br>木(长女)</div>
+                <div class="cell"><b>离九</b><br>火(中女)</div>
+                <div class="cell"><b>坤二</b><br>土(母亲)</div>
+                <div class="cell"><b>震三</b><br>木(长男)</div>
+                <div class="cell"><b>中宫</b><br>土</div>
+                <div class="cell"><b>兑七</b><br>金(少女)</div>
+                <div class="cell"><b>艮八</b><br>土(少男)</div>
+                <div class="cell"><b>坎一</b><br>水(中男)</div>
+                <div class="cell"><b>乾六</b><br>金(父亲)</div>
             </div>
         </div>
     </div>
 
     <script>
-        const ms = ["子","癸","丑","艮","寅","甲","卯","乙","辰","巽","巳","丙","午","丁","未","坤","申","庚","酉","辛","戌","乾","亥","壬"];
-        const box = document.getElementById('mountains-box');
-        ms.forEach((t, i) => {
-            const d = document.createElement('div');
-            d.className = 'm-text'; d.innerText = t;
-            d.style.transform = `rotate(${i * 15}deg)`;
-            box.appendChild(d);
-        });
-
         const btn = document.getElementById('start-btn');
-        const degEl = document.getElementById('degree-val');
-        const guaEl = document.getElementById('gua-val');
+        const ui = document.getElementById('ui');
+        const info = document.getElementById('info-box');
         const disk = document.getElementById('disk');
 
         btn.onclick = () => {
             if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                DeviceOrientationEvent.requestPermission().then(s => { if(s==='granted') run(); });
-            } else { run(); }
+                DeviceOrientationEvent.requestPermission().then(s => { 
+                    if(s === 'granted') start();
+                    else alert("需要授权才能使用指南针");
+                }).catch(e => alert("权限请求错误: " + e));
+            } else {
+                start();
+            }
         };
 
-        function run() {
+        function start() {
             btn.style.display = 'none';
-            document.getElementById('ui').style.display = 'flex';
-            document.getElementById('info-box').style.display = 'block';
-
+            ui.style.display = 'flex';
+            info.style.display = 'block';
             window.addEventListener('deviceorientation', e => {
-                let h = e.webkitCompassHeading; 
-                if (h !== undefined) {
-                    disk.style.transform = `rotate(${-h}deg)`;
-                    degEl.innerText = Math.round(h) + "°";
-
-                    const gs = [
-                        {n:"坎一(正北)·中男", min:337.5, max:22.5},
-                        {n:"艮八(东北)·少男", min:22.5, max:67.5},
-                        {n:"震三(正东)·长男", min:67.5, max:112.5},
-                        {n:"巽四(东南)·长女", min:112.5, max:157.5},
-                        {n:"离九(正南)·中女", min:157.5, max:202.5},
-                        {n:"坤二(西南)·母亲", min:202.5, max:247.5},
-                        {n:"兑七(正西)·少女", min:247.5, max:292.5},
-                        {n:"乾六(西北)·父亲", min:292.5, max:337.5}
-                    ];
-                    
-                    let res = "校准中...";
-                    for (let g of gs) {
-                        if (g.min > g.max) {
-                            if (h >= g.min || h < g.max) { res = g.n; break; }
-                        } else {
-                            if (h >= g.min && h < g.max) { res = g.n; break; }
-                        }
-                    }
-                    guaEl.innerText = res;
+                let h = e.webkitCompassHeading || 0;
+                disk.style.transform = `rotate(${-h}deg)`;
+                document.getElementById('degree-val').innerText = Math.round(h) + "°";
+                
+                const gs = [
+                    {n:"坎一·水(中男)", min:337.5, max:22.5}, {n:"艮八·土(少男)", min:22.5, max:67.5},
+                    {n:"震三·木(长男)", min:67.5, max:112.5}, {n:"巽四·木(长女)", min:112.5, max:157.5},
+                    {n:"离九·火(中女)", min:157.5, max:202.5}, {n:"坤二·土(母亲)", min:202.5, max:247.5},
+                    {n:"兑七·金(少女)", min:247.5, max:292.5}, {n:"乾六·金(父亲)", min:292.5, max:337.5}
+                ];
+                let res = "定位中...";
+                for (let g of gs) {
+                    if (g.min > g.max) { if (h >= g.min || h < g.max) { res = g.n; break; } }
+                    else { if (h >= g.min && h < g.max) { res = g.n; break; } }
                 }
+                document.getElementById('gua-val').innerText = res;
             }, true);
         }
     </script>
